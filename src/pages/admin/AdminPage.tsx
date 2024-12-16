@@ -28,7 +28,7 @@ export default function AdminPage() {
       </div>
       <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         {products.map((product) => (
-          <div onClick={() => handleClick(product.id)}>
+          <div key={product.id} onClick={() => handleClick(product.id)}>
             <DisplayProductCard product={product} key={product.id} />
           </div>
         ))}

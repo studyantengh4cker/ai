@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { collection, onSnapshot } from "firebase/firestore";
+import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
 import { firestore } from "../utils/firebase";
 import { Review } from "../utils/globals"; // Import your Review type if applicable
 
@@ -8,15 +8,17 @@ export const useRating = (id: string) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Reference to the reviews collection for a specific product
   const ratingsRef = collection(firestore, `products/${id}/reviews`);
+  // Create a query to fetch reviews ordered by timestamp (descending)
+  const ratingsQuery = query(ratingsRef, orderBy("createdAt", "desc"));
 
-  // Function to fetch reviews for the product in real-time
   const fetchRatings = () => {
     setLoading(true);
     setError(null);
 
     const unsubscribe = onSnapshot(
-      ratingsRef,
+      ratingsQuery,
       (snapshot) => {
         const fetchedReviews = snapshot.docs.map((doc) => ({
           id: doc.id, // Include the document ID if needed
@@ -32,7 +34,6 @@ export const useRating = (id: string) => {
       }
     );
 
-    // Cleanup function to unsubscribe from the listener
     return () => unsubscribe();
   };
 
